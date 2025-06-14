@@ -16,6 +16,7 @@ const createUserSchema = Joi.object({
     "string.empty": "Password is required",
     "string.min": "Password must be at least 6 characters",
   }),
+  confirmPassword: Joi.string().min(6).max(100),
 
   role: Joi.string().valid("seller", "buyer").default("buyer").messages({
     "any.only": "Role must be either 'seller' or 'buyer'",

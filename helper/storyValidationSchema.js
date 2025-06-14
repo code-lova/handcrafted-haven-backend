@@ -8,12 +8,17 @@ const objectIdValidator = (value, helpers) => {
   return value;
 };
 
-
 export const createStorySchema = Joi.object({
   name: Joi.string().min(3).max(100).required().messages({
     "string.empty": "Story name is required",
     "string.min": "Story name must be at least 3 characters",
     "string.max": "Story name must not exceed 100 characters",
+  }),
+
+  files: Joi.array().items(Joi.string().uri()).min(1).required().messages({
+    "array.base": "Images must be an array of URLs",
+    "array.min": "At least one image is required",
+    "any.required": "Images are required",
   }),
 
   description: Joi.string().max(1000).required().messages({
@@ -34,12 +39,22 @@ export const createStorySchema = Joi.object({
   categoryId: Joi.string().custom(objectIdValidator).required().messages({
     "string.empty": "Category is required",
   }),
+
+  sellerId: Joi.string().custom(objectIdValidator).required().messages({
+    "string.empty": "SellerId is required",
+  }),
 });
 
 export const updateStorySchema = Joi.object({
   name: Joi.string().min(3).max(100).messages({
     "string.min": "Story name must be at least 3 characters",
     "string.max": "Story name must not exceed 100 characters",
+  }),
+
+  files: Joi.array().items(Joi.string().uri()).min(1).required().messages({
+    "array.base": "Images must be an array of URLs",
+    "array.min": "At least one image is required",
+    "any.required": "Images are required",
   }),
 
   description: Joi.string().max(1000).messages({
@@ -57,6 +72,10 @@ export const updateStorySchema = Joi.object({
   categoryId: Joi.string().custom(objectIdValidator).messages({
     "string.empty": "Category must not be empty",
   }),
+
+  sellerId: Joi.string().custom(objectIdValidator).messages({
+    "string.empty": "SellerId must not be empty",
+  }),
 });
 
-export default { createStorySchema, updateStorySchema }
+export default { createStorySchema, updateStorySchema };

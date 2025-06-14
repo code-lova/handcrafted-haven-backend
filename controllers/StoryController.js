@@ -3,15 +3,15 @@ import storyService from "../services/storyService.js";
 
 // Create Story
 const createStory = async (req, res, next) => {
-  const { name, description, price, status, category } = req.body;
-  const seller = req.user.id;
+  const { name, files, description, price, status, categoryId } = req.body;
+  const sellerId = req.user.id;
 
   const existingStory = await storyService.findStoryByName(name);
   if (existingStory) {
     return next(createHttpError(409, "Story already exists"));
   }
   try {
-    const data = { name, description, price, status, category, seller };
+    const data = { name, files, description, price, status, categoryId, sellerId };
     const story = await storyService.createStory(data);
     if (!story) {
       return next(createHttpError(500, "Failed to create new Story"));
@@ -34,10 +34,11 @@ const getAllStories = async (req, res, next) => {
 
 // Get Story by ID
 const getStoryById = async (req, res, next) => {
+  const sellerId = req.user.id;
   try {
-    const story = await storyService.getStoryById(req.params.id);
+    const story = await storyService.getStoryById(sellerId);
     if (!story) {
-      return next(createHttpError(404, "Story not found"));
+      return next(createHttpError(404, "User Story not found"));
     }
     res.status(200).json(story);
   } catch (error) {

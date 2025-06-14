@@ -14,7 +14,7 @@ router.post(
   StoryController.createStory
 );
 router.get("/", authenticateUser, authorizeRole("seller"), StoryController.getAllStories);
-router.get("/:id", authenticateUser, authorizeRole("seller"), StoryController.getStoryById);
+router.get("/user-story", authenticateUser, authorizeRole("seller"), StoryController.getStoryById);
 router.put(
   "/:id",
   authenticateUser,

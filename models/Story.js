@@ -13,6 +13,16 @@ const storySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    files: {
+      type: [String],
+      required: true,
+      validate: {
+        validator: function (arr) {
+          return Array.isArray(arr) && arr.length > 0;
+        },
+        message: "At least one image URL is required",
+      },
+    },
     description: {
       type: String,
       required: true,

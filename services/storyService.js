@@ -13,13 +13,18 @@ const findStoryByName = async (name) => {
 
 // Get All Stories
 const getAllStories = async () => {
-  return await Story.find().sort({ createdAt: -1 });
+  return await Story.find().populate("categoryId", "name").sort({ createdAt: -1 });
 };
 
 // Get Story by ID
-const getStoryById = async (id) => {
-  return await Story.findById(id);
+const getStoryById = async (sellerId) => {
+  return await Story.find({ sellerId }).populate("categoryId", "name").sort({ createdAt: -1 });
 };
+
+// Get Story by ID
+// const getStoryById = async (id) => {
+//   return await Story.findById(id);
+// };
 
 // Update Story
 const updateStory = async (id, data) => {

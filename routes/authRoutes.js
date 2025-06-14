@@ -1,6 +1,8 @@
 import express from "express";
 import userController from "../controllers/userController.js";
 import userValidator from "../middleware/userValidator.js";
+import authenticateUser from "../middleware/authMiddleware.js";
+
 
 const router = express.Router();
 
@@ -8,4 +10,9 @@ router.post("/register", userValidator.validateCreateUser, userController.regist
 // Login route for NextAuth
 router.post("/login", userController.loginUser);
 
+//get user details
+router.get("/user", authenticateUser, userController.getUser)
+
+//Logout handler
+router.get("/logout", userController.logoutHandler)
 export default router;

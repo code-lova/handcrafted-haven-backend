@@ -31,9 +31,12 @@ const loginUser = async (req, res, next) => {
 
   try {
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return next(createHttpError(401, "Invalid email or password"));
+    }
+    if (!password) {
+      return next(createHttpError(400, "Password is required"));
     }
 
     // Compare password
@@ -56,14 +59,38 @@ const loginUser = async (req, res, next) => {
 
     // Send response to NextAuth
     res.status(200).json({
+      id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       accessToken,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
-export default { registerUser, loginUser };
+const logoutHandler = async (req, res, next) => {
+   try {
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+const getUser = async (req, res, next) => {
+  const userId = req.user.id;
+  const existingUser = await userService.findUserById(userId);
+  if (!existingUser) {
+    return next(createHttpError(404, "No user found"));
+  }
+  try {
+    const user = await userService.getUserById(userId);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export default { registerUser, loginUser, getUser, logoutHandler };
