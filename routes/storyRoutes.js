@@ -13,8 +13,15 @@ router.post(
   storyValidator.validateCreateStory,
   StoryController.createStory
 );
-router.get("/", authenticateUser, authorizeRole("seller"), StoryController.getAllStories);
-router.get("/user-story", authenticateUser, authorizeRole("seller"), StoryController.getStoryById);
+router.get("/", StoryController.getAllStories);
+router.get("/story-detail/:id", StoryController.getStoryDetails);
+
+router.get(
+  "/user-stories",
+  authenticateUser,
+  authorizeRole("seller"),
+  StoryController.getStoryBySellerId
+);
 router.put(
   "/:id",
   authenticateUser,
@@ -27,6 +34,5 @@ router.delete("/:id", authenticateUser, authorizeRole("seller"), StoryController
 // Filtering
 router.get("/filter-by-category/:categoryId", StoryController.filterByCategory);
 router.get("/filter-by-price", StoryController.filterByPrice);
-
 
 export default router;

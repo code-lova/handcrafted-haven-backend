@@ -13,6 +13,8 @@ router.post("/login", userController.loginUser);
 //get user details
 router.get("/user", authenticateUser, userController.getUser)
 
+router.put("/user", authenticateUser, userController.updateProfile);
+
 //Logout handler
 router.get("/logout", userController.logoutHandler)
 export default router;

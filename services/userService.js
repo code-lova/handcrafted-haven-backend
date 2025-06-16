@@ -17,7 +17,7 @@ const createUser = async ({ name, email, password, role }) => {
 
 //Update a user by id and it body
 const updateUser = async (id, data) => {
-  return await User.findByIdAndUpdate(id, data, { new: true });
+  return await User.findByIdAndUpdate(id, data, { new: true }).select("-password");
 };
 
 

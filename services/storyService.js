@@ -16,15 +16,23 @@ const getAllStories = async () => {
   return await Story.find().populate("categoryId", "name").sort({ createdAt: -1 });
 };
 
-// Get Story by ID
-const getStoryById = async (sellerId) => {
+//Get story by UUID
+const getStoryUuid = async (uuid) => {
+  return await Story.findOne({ uuid }).populate("categoryId", "name");
+};
+
+// Get Story by ID that belongs to the user that made it
+const getStoryBySeller = async (sellerId) => {
   return await Story.find({ sellerId }).populate("categoryId", "name").sort({ createdAt: -1 });
 };
 
+
 // Get Story by ID
-// const getStoryById = async (id) => {
-//   return await Story.findById(id);
-// };
+const getStoryById = async (id) => {
+  return await Story.findById(id);
+};
+
+
 
 // Update Story
 const updateStory = async (id, data) => {
@@ -51,9 +59,11 @@ export default {
   createStory,
   findStoryByName,
   getAllStories,
-  getStoryById,
+  getStoryBySeller,
   updateStory,
   deleteStory,
   getStoriesByCategory,
   getStoriesByPriceRange,
+  getStoryById,
+  getStoryUuid,
 };

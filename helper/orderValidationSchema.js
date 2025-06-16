@@ -10,8 +10,12 @@ const objectIdValidator = (value, helpers) => {
 
 export const createOrderSchema = Joi.object({
   buyerId: Joi.string().custom(objectIdValidator).required().messages({
-    "any.required": "User ID is required",
-    "any.invalid": "User ID must be a valid ObjectId",
+    "any.required": "Byer ID is required",
+    "any.invalid": "Buyer ID must be a valid ObjectId",
+  }),
+  sellerId: Joi.string().custom(objectIdValidator).required().messages({
+    "any.required": "Seller ID is required",
+    "any.invalid": "Sellr ID must be a valid ObjectId",
   }),
   storyId: Joi.string().custom(objectIdValidator).required().messages({
     "any.required": "Story ID is required",

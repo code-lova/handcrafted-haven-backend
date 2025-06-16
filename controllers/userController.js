@@ -71,12 +71,12 @@ const loginUser = async (req, res, next) => {
 };
 
 const logoutHandler = async (req, res, next) => {
-   try {
+  try {
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     next(error);
   }
-}
+};
 
 const getUser = async (req, res, next) => {
   const userId = req.user.id;
@@ -92,5 +92,43 @@ const getUser = async (req, res, next) => {
   }
 };
 
+const updateProfile = async (req, res, next) => {
+  const userId = req.user.id;
+  const { name, email, password } = req.body;
 
-export default { registerUser, loginUser, getUser, logoutHandler };
+  try {
+    const existingUser = await userService.findUserById(userId);
+    if (!existingUser) {
+      return next(createHttpError(404, "User not found"));
+    }
+
+    // Check if the new email is used by another user
+    if (email && email !== existingUser.email) {
+      const emailInUse = await userService.findUserByEmail(email);
+      if (emailInUse && emailInUse._id.toString() !== userId) {
+        return next(createHttpError(409, "Email is already in use"));
+      }
+    }
+
+    const updatedData = {
+      name: name || existingUser.name,
+      email: email || existingUser.email,
+    };
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updatedData.password = hashedPassword;
+    }
+
+    const updatedUser = await userService.updateUser(userId, updatedData);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { registerUser, loginUser, getUser, logoutHandler, updateProfile };

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -24,6 +23,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["buyer", "seller"],
       default: "buyer",
+    },
+    phone: {
+      type: String,
+      default: null, // optional and nullable
+      trim: true,
+    },
+    address: {
+      type: String,
+      default: null, // optional and nullable
+      trim: true,
     },
     createdAt: {
       type: Date,

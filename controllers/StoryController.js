@@ -1,5 +1,6 @@
 import createHttpError from "http-errors";
 import storyService from "../services/storyService.js";
+import cloudinary from "../config/cloudinary.js";
 
 // Create Story
 const createStory = async (req, res, next) => {
@@ -32,11 +33,26 @@ const getAllStories = async (req, res, next) => {
   }
 };
 
+const getStoryDetails = async (req, res, next) => {
+  const storyUuid = req.params.id;
+  try {
+    const story = await storyService.getStoryUuid(storyUuid);
+
+    if (!story) {
+      return next(createHttpError(404, "Story not found"));
+    }
+
+    res.status(200).json(story);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get Story by ID
-const getStoryById = async (req, res, next) => {
+const getStoryBySellerId = async (req, res, next) => {
   const sellerId = req.user.id;
   try {
-    const story = await storyService.getStoryById(sellerId);
+    const story = await storyService.getStoryBySeller(sellerId);
     if (!story) {
       return next(createHttpError(404, "User Story not found"));
     }
@@ -52,12 +68,33 @@ const updateStory = async (req, res, next) => {
     return next(createHttpError(400, "Request cannot be empty"));
   }
 
-  const id = req.params.id;
+  const storyId = req.params.id;
+  const sellerId = req.user.id;
+  const { files: updatedFiles } = req.body;
   try {
-    const updatedStory = await storyService.updateStory(id, req.body);
-    if (!updatedStory) {
+    const existingStory = await storyService.getStoryById(storyId);
+
+    if (!existingStory) {
       return next(createHttpError(404, "Story not found"));
     }
+
+    // Ensure the user is the owner
+    if (existingStory.sellerId.toString() !== sellerId) {
+      return next(createHttpError(403, "You are not authorized to update this story"));
+    }
+
+    // Determine which images were removed
+    const existingPublicIds = existingStory.files.map((img) => img.public_id);
+    const updatedPublicIds = updatedFiles.map((img) => img.public_id);
+    const imagesToDelete = existingPublicIds.filter((id) => !updatedPublicIds.includes(id));
+
+    // Delete removed images from Cloudinary
+    if (imagesToDelete.length > 0) {
+      await Promise.all(imagesToDelete.map((public_id) => cloudinary.uploader.destroy(public_id)));
+    }
+    // Proceed with update
+    const updatedStory = await storyService.updateStory(storyId, req.body);
+
     res.status(200).json({ message: "Story updated successfully", updatedStory });
   } catch (error) {
     next(error);
@@ -69,16 +106,28 @@ const deleteStory = async (req, res, next) => {
   const id = req.params.id;
 
   try {
+    const existingStory = await storyService.getStoryById(id);
+
+    if (!existingStory) {
+      return next(createHttpError(404, "Story not found"));
+    }
+
+    // Delete all images from Cloudinary
+    const publicIds = existingStory.files.map((file) => file.public_id);
+
+    if (publicIds.length > 0) {
+      await Promise.all(publicIds.map((public_id) => cloudinary.uploader.destroy(public_id)));
+    }
+
     const deleted = await storyService.deleteStory(id);
     if (!deleted) {
       return next(createHttpError(404, "Story not found"));
     }
-    res.status(200).json({ message: "Story deleted successfully" });
+    res.status(200).json({ message: "Story and associated images deleted successfully" });
   } catch (error) {
     next(error);
   }
 };
-
 
 const filterByCategory = async (req, res, next) => {
   try {
@@ -104,9 +153,10 @@ const filterByPrice = async (req, res, next) => {
 export default {
   createStory,
   getAllStories,
-  getStoryById,
+  getStoryBySellerId,
   updateStory,
   deleteStory,
   filterByCategory,
   filterByPrice,
+  getStoryDetails
 };

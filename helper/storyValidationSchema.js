@@ -15,11 +15,27 @@ export const createStorySchema = Joi.object({
     "string.max": "Story name must not exceed 100 characters",
   }),
 
-  files: Joi.array().items(Joi.string().uri()).min(1).required().messages({
-    "array.base": "Images must be an array of URLs",
-    "array.min": "At least one image is required",
-    "any.required": "Images are required",
-  }),
+  files: Joi.array()
+    .items(
+      Joi.object({
+        secure_url: Joi.string().uri().required().messages({
+          "string.base": "secure_url must be a string",
+          "string.uri": "secure_url must be a valid URL",
+          "any.required": "secure_url is required",
+        }),
+        public_id: Joi.string().required().messages({
+          "string.base": "public_id must be a string",
+          "any.required": "public_id is required",
+        }),
+      })
+    )
+    .min(1)
+    .required()
+    .messages({
+      "array.base": "Images must be an array of objects with secure_url and public_id",
+      "array.min": "At least one image is required",
+      "any.required": "Images are required",
+    }),
 
   description: Joi.string().max(1000).required().messages({
     "string.empty": "Description is required",
@@ -51,11 +67,27 @@ export const updateStorySchema = Joi.object({
     "string.max": "Story name must not exceed 100 characters",
   }),
 
-  files: Joi.array().items(Joi.string().uri()).min(1).required().messages({
-    "array.base": "Images must be an array of URLs",
-    "array.min": "At least one image is required",
-    "any.required": "Images are required",
-  }),
+  files: Joi.array()
+    .items(
+      Joi.object({
+        secure_url: Joi.string().uri().required().messages({
+          "string.base": "secure_url must be a string",
+          "string.uri": "secure_url must be a valid URL",
+          "any.required": "secure_url is required",
+        }),
+        public_id: Joi.string().required().messages({
+          "string.base": "public_id must be a string",
+          "any.required": "public_id is required",
+        }),
+      })
+    )
+    .min(1)
+    .required()
+    .messages({
+      "array.base": "Images must be an array of objects with secure_url and public_id",
+      "array.min": "At least one image is required",
+      "any.required": "Images are required",
+    }),
 
   description: Joi.string().max(1000).messages({
     "string.max": "Description must not exceed 1000 characters",
