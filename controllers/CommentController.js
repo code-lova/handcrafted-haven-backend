@@ -27,14 +27,13 @@ const getAllComments = async (req, res, next) => {
   }
 };
 
-// Get comment by ID
-const getCommentById = async (req, res, next) => {
+const getCommentsByStoryId = async (req, res, next) => {
   try {
-    const comment = await commentService.getCommentById(req.params.id);
-    if (!comment) {
+    const comments = await commentService.getCommentsByStoryId(req.params.id);
+     if (!comments) {
       return next(createHttpError(404, "Comment not found"));
     }
-    res.status(200).json(comment);
+    res.status(200).json(comments);
   } catch (err) {
     next(err);
   }
@@ -72,7 +71,7 @@ const deleteComment = async (req, res, next) => {
 export default {
   createComment,
   getAllComments,
-  getCommentById,
+  getCommentsByStoryId,
   updateComment,
   deleteComment,
 };

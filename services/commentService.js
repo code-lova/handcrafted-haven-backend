@@ -11,9 +11,9 @@ const getAllComments = async () => {
   return await Comment.find().sort({ createdAt: -1 });
 };
 
-// Get comment by ID
-const getCommentById = async (id) => {
-  return await Comment.findById(id);
+// Get all comments for a story
+const getCommentsByStoryId = async (storyId) => {
+  return await Comment.find({ storyId }).populate("userId"); // Populate user's name
 };
 
 // Update comment
@@ -29,7 +29,7 @@ const deleteComment = async (id) => {
 export default {
   createComment,
   getAllComments,
-  getCommentById,
+  getCommentsByStoryId,
   updateComment,
   deleteComment,
 };

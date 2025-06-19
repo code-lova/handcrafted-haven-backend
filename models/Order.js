@@ -8,35 +8,32 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    sellerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    storyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Story",
-      required: true,
-    },
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-    amount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
+    items: [
+      {
+        storyId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Story",
+          required: true,
+        },
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true, min: 1 },
+      },
+    ],
     totalAmount: {
       type: Number,
       required: true,
       min: 0,
+    },
+    phone: {
+      type: String,
+      required: true,
+      max: 14,
+    },
+    address: {
+      type: String,
+      required: true,
+      max: 1000,
     },
     uuid: {
       type: String,
@@ -47,6 +44,14 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
+    },
+    paymentIntentId: {
+      type: String,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "paid", "refunded"],
+      default: "unpaid",
     },
     createdAt: {
       type: Date,

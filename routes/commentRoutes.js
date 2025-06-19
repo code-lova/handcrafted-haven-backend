@@ -14,7 +14,7 @@ router.post(
   CommentController.createComment
 );
 router.get("/", CommentController.getAllComments);
-router.get("/:id", authenticateUser, authorizeRole("buyer"), CommentController.getCommentById);
+router.get("/story/:id", CommentController.getCommentsByStoryId);
 router.put(
   "/:id",
   authenticateUser,

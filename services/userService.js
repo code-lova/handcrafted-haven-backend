@@ -12,7 +12,7 @@ const createUser = async ({ name, email, password, role }) => {
     role,
   });
 
-  return await User.create(newUser);
+  return await newUser.save();
 };
 
 //Update a user by id and it body

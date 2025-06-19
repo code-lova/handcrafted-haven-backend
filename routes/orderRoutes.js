@@ -6,6 +6,7 @@ import authorizeRole from "../middleware/authorizedRole.js";
 
 const router = express.Router();
 
+//This is temporarly not used for now
 router.post(
   "/",
   authenticateUser,
@@ -13,13 +14,29 @@ router.post(
   orderValidator.validateCreateOrder,
   OrderController.createOrder
 );
+
+//Send data to stripe and return data to /success for new order creation
+router.post(
+  "/checkout",
+  authenticateUser,
+  authorizeRole("buyer"),
+  OrderController.createStripeCheckoutSession
+);
+
+// this will create new order in DB after successful stripe payment
+router.post("/success", OrderController.handleStripeSuccess); 
+
+//Get all orders
 router.get("/", authenticateUser, authorizeRole(["buyer", "seller"]), OrderController.getAllOrders);
+
+//Get all orders made by a user
 router.get(
-  "/:id",
+  "/user-orders",
   authenticateUser,
   authorizeRole(["buyer", "seller"]),
   OrderController.getOrderById
 );
+
 router.put(
   "/:id",
   authenticateUser,

@@ -5,16 +5,23 @@ const createOrder = async (data) => {
   return await order.save();
 };
 
-const findOrderById = async(id) => {
-  return await Order.findById(id);
-}
-
-const getAllOrders = async () => {
-  return await Order.find().populate("userId storyId").sort({ createdAt: -1 });
+const findOrderById = async (id) => {
+  return await Order.findOne(id);
 };
 
-const getOrderById = async (id) => {
-  return await Order.findById(id).populate("userId storyId");
+const getAllOrders = async () => {
+  return await Order.find().populate("storyId").sort({ createdAt: -1 });
+};
+
+
+const getOrdersByUser = async (buyerId) => {
+  return await Order.find({ buyerId }).populate({
+    path: "items.storyId",
+    populate: {
+      path: "sellerId", // Story model has sellerId as a ref to User
+      select: "name", // only fetch seller name
+    },
+  }).select("-paymentIntentId -uuid -paymentStatus");
 };
 
 const updateOrder = async (id, data) => {
@@ -29,7 +36,7 @@ export default {
   createOrder,
   findOrderById,
   getAllOrders,
-  getOrderById,
+  getOrdersByUser,
   updateOrder,
   deleteOrder,
 };

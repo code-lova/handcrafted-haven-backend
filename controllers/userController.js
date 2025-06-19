@@ -6,7 +6,6 @@ import User from "../models/User.js";
 
 const registerUser = async (req, res, next) => {
   const { name, email, password, role } = req.body;
-
   try {
     // Check if user already exists
     const existingUser = await userService.findUserByEmail(email);
@@ -19,7 +18,6 @@ const registerUser = async (req, res, next) => {
     if (!newUser) {
       return next(createHttpError(500, "Failed to create new user"));
     }
-
     return res.status(201).json({ newUser, message: "User Created successfully" });
   } catch (error) {
     next(error);
@@ -94,7 +92,7 @@ const getUser = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   const userId = req.user.id;
-  const { name, email, password } = req.body;
+  const { name, email, phone, address, password } = req.body;
 
   try {
     const existingUser = await userService.findUserById(userId);
@@ -113,6 +111,8 @@ const updateProfile = async (req, res, next) => {
     const updatedData = {
       name: name || existingUser.name,
       email: email || existingUser.email,
+      phone: phone || existingUser.phone,
+      address: address || existingUser.address,
     };
 
     if (password && password.trim() !== "") {

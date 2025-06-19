@@ -33,6 +33,18 @@ const updateUserSchema = Joi.object({
     "string.email": "Email must be a valid email address",
   }),
 
+  phone: Joi.string()
+    .pattern(/^\+\d+$/)
+    .messages({
+      "string.pattern.base": "Phone number must start with '+' followed by digits",
+    })
+    .optional(),
+
+  address: Joi.string().min(5).max(255).optional().messages({
+    "string.min": "Address must be at least 5 characters",
+    "string.max": "Address must not exceed 255 characters",
+  }),
+
   password: Joi.string().min(6).messages({
     "string.min": "Password must be at least 6 characters",
   }),
@@ -42,4 +54,4 @@ const updateUserSchema = Joi.object({
   }),
 });
 
-export default { createUserSchema, updateUserSchema}
+export default { createUserSchema, updateUserSchema };

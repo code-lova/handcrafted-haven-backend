@@ -32,7 +32,6 @@ router.put(
 router.delete("/:id", authenticateUser, authorizeRole("seller"), StoryController.deleteStory);
 
 // Filtering
-router.get("/filter-by-category/:categoryId", StoryController.filterByCategory);
-router.get("/filter-by-price", StoryController.filterByPrice);
+router.get("/filter", StoryController.filterStories);
 
 export default router;

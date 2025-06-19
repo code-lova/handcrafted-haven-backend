@@ -129,26 +129,16 @@ const deleteStory = async (req, res, next) => {
   }
 };
 
-const filterByCategory = async (req, res, next) => {
+const filterStories = async (req, res, next) => {
   try {
-    const categoryId = req.params.categoryId;
-    const stories = await storyService.getStoriesByCategory(categoryId);
+    const { category, price } = req.query;
+    const stories = await storyService.filterStories({ categoryId: category, price });
     res.status(200).json({ success: true, data: stories });
   } catch (error) {
     next(error);
   }
 };
 
-const filterByPrice = async (req, res, next) => {
-  try {
-    const min = parseFloat(req.query.min) || 0;
-    const max = parseFloat(req.query.max) || Number.MAX_SAFE_INTEGER;
-    const stories = await storyService.getStoriesByPriceRange(min, max);
-    res.status(200).json({ success: true, data: stories });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export default {
   createStory,
@@ -156,7 +146,6 @@ export default {
   getStoryBySellerId,
   updateStory,
   deleteStory,
-  filterByCategory,
-  filterByPrice,
+  filterStories,
   getStoryDetails
 };

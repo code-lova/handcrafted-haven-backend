@@ -13,27 +13,30 @@ export const createOrderSchema = Joi.object({
     "any.required": "Byer ID is required",
     "any.invalid": "Buyer ID must be a valid ObjectId",
   }),
-  sellerId: Joi.string().custom(objectIdValidator).required().messages({
-    "any.required": "Seller ID is required",
-    "any.invalid": "Sellr ID must be a valid ObjectId",
-  }),
-  storyId: Joi.string().custom(objectIdValidator).required().messages({
-    "any.required": "Story ID is required",
-    "any.invalid": "Story ID must be a valid ObjectId",
-  }),
-  quantity: Joi.number().integer().min(1).required().messages({
-    "number.base": "Quantity must be a number",
-    "number.min": "Quantity must be at least 1",
-    "any.required": "Quantity is required",
-  }),
+  phone: Joi.string().min(11).max(14).required(),
+  address: Joi.string().max(1000).required(),
+
   totalAmount: Joi.number().min(0).required().messages({
     "number.base": "Total amount must be a number",
     "number.min": "Total amount must be at least 0",
     "any.required": "Total amount is required",
   }),
+  items: Joi.array()
+    .items(
+      Joi.object({
+        storyId: Joi.string().custom(objectIdValidator).required(),
+        name: Joi.string().required(),
+        price: Joi.number().min(0).required(),
+        quantity: Joi.number().integer().min(1).required(),
+      })
+    )
+    .min(1)
+    .required(),
   status: Joi.string()
     .valid("pending", "confirmed", "shipped", "delivered", "cancelled")
     .default("pending"),
+  paymentIntentId: Joi.string().optional(),
+  paymentStatus: Joi.string().valid("unpaid", "paid", "refunded").default("unpaid"),
 });
 
 const updateOrderSchema = Joi.object({

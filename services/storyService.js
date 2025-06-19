@@ -13,12 +13,15 @@ const findStoryByName = async (name) => {
 
 // Get All Stories
 const getAllStories = async () => {
-  return await Story.find().populate("categoryId", "name").sort({ createdAt: -1 });
+  return await Story.find()
+    .populate("categoryId", "name")
+    .populate("sellerId", "name")
+    .sort({ createdAt: -1 });
 };
 
 //Get story by UUID
 const getStoryUuid = async (uuid) => {
-  return await Story.findOne({ uuid }).populate("categoryId", "name");
+  return await Story.findOne({ uuid }).populate("categoryId", "name").populate("sellerId", "name");
 };
 
 // Get Story by ID that belongs to the user that made it
@@ -26,13 +29,10 @@ const getStoryBySeller = async (sellerId) => {
   return await Story.find({ sellerId }).populate("categoryId", "name").sort({ createdAt: -1 });
 };
 
-
 // Get Story by ID
 const getStoryById = async (id) => {
   return await Story.findById(id);
 };
-
-
 
 // Update Story
 const updateStory = async (id, data) => {
@@ -44,15 +44,19 @@ const deleteStory = async (id) => {
   return await Story.findByIdAndDelete(id);
 };
 
-const getStoriesByCategory = async (categoryId) => {
-  return await Story.find({ category: categoryId, status: "active" }).sort({ createdAt: -1 });
-};
+const filterStories = async ({ categoryId, price }) => {
+  const query = { status: "active" };
 
-const getStoriesByPriceRange = async (min, max) => {
-  return await Story.find({
-    price: { $gte: min, $lte: max },
-    status: "active",
-  }).sort({ price: 1 }); // optional sorting
+  if (categoryId) {
+    query.categoryId = categoryId;
+  }
+
+  if (price) {
+    const [min, max] = price.split("-").map(Number);
+    query.price = { $gte: min, $lte: max };
+  }
+
+  return await Story.find(query).populate("categoryId", "name").sort({ createdAt: -1 });
 };
 
 export default {
@@ -62,8 +66,7 @@ export default {
   getStoryBySeller,
   updateStory,
   deleteStory,
-  getStoriesByCategory,
-  getStoriesByPriceRange,
+  filterStories,
   getStoryById,
   getStoryUuid,
 };
